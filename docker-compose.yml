@@ -30,6 +30,7 @@ services:
             - mailpit
             - selenium
             - soketi
+            - typesense
     mysql:
         image: 'mysql/mysql-server:8.0'
         ports:
@@ -57,12 +58,10 @@ services:
     phpmyadmin:
         image: phpmyadmin/phpmyadmin
         links:
-            - mysql:mysql
+            - 'mysql:mysql'
         ports:
-            - 8080:80
+            - '8080:80'
         environment:
-            #PMA_USER: "${DB_USERNAME}"
-            #PMA_PASSWORD: "${DB_PASSWORD}"
             PMA_HOST: mysql
         networks:
             - sail
@@ -155,6 +154,27 @@ services:
             - '${PUSHER_METRICS_PORT:-9601}:9601'
         networks:
             - sail
+    typesense:
+        image: 'typesense/typesense:0.25.2'
+        ports:
+            - '${FORWARD_TYPESENSE_PORT:-8108}:8108'
+        environment:
+            TYPESENSE_DATA_DIR: '${TYPESENSE_DATA_DIR:-/typesense-data}'
+            TYPESENSE_API_KEY: '${TYPESENSE_API_KEY:-xyz}'
+            TYPESENSE_ENABLE_CORS: '${TYPESENSE_ENABLE_CORS:-true}'
+        volumes:
+            - 'sail-typesense:/typesense-data'
+        networks:
+            - sail
+        healthcheck:
+            test:
+                - CMD
+                - wget
+                - '--no-verbose'
+                - '--spider'
+                - 'http://localhost:8108/health'
+            retries: 5
+            timeout: 7s
 networks:
     sail:
         driver: bridge
@@ -166,4 +186,6 @@ volumes:
     sail-meilisearch:
         driver: local
     sail-minio:
+        driver: local
+    sail-typesense:
         driver: local
