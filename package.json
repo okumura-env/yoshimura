@@ -1,14 +1,13 @@
 {
     "private": true,
     "scripts": {
-        "dev": "vite",
-        "build": "vite build",
-        "production": "mix --production",
-        "heroku-postbuild": "npm run production"
+    "dev": "vite",
+    "build": "vite build",
+    "heroku": "npm run production"
     },
     "engines": {
-        "node": "v20.10.0"
-        },
+    "node": "v20.10.0"
+    },
     "devDependencies": {
         "axios": "^1.1.2",
         "laravel-vite-plugin": "^0.7.2",
